@@ -3,8 +3,8 @@
  * @author Ryan Jeffrey <ryan@ryanmj.xyz>
  * @date 08/7/21
 */
-#ifndef DOOM_GAME_LAYER_HPP
-#define DOOM_GAME_LAYER_HPP
+#ifndef PROJ_GAME_LAYER_HPP
+#define PROJ_GAME_LAYER_HPP
 
 #include "frame.hpp"
 
@@ -12,15 +12,26 @@
 #include <cstdint>
 #include <chrono>
 
-namespace doom
+namespace proj
 {
     class GameLayer : public frame::Layer
     {
     public:
+        const static std::chrono::nanoseconds LOGICAL_FRAME_TIME;
         GameLayer();
         virtual ~GameLayer() = default;
 
         virtual void update();
+        virtual void draw(double alpha);
+        virtual void handleEvent(std::shared_ptr<proj::Event> event);
+        virtual void startFrame();
+    protected:
+        bool mRightButtonIsPressed;
+        bool mMouseMoved;
+        float mLastMouseX;
+        float mLastMouseY;
+        float mXpos;
+        float mYpos;
     };
 }
-#endif /* DOOM_GAME_LAYER_HPP */
+#endif /* PROJ_GAME_LAYER_HPP */

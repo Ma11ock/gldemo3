@@ -2,49 +2,55 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <memory>
 
-#include "renderer/renderer.hpp"
+#include "graphics.hpp"
 #include "frame.hpp"
 #include "input.hpp"
+#include "gameLayer.hpp"
 
 using namespace std::literals::string_literals;
 using namespace std::literals::string_view_literals;
-static std::vector<std::string> args;
 
-constexpr std::string_view NAME = "project";
+namespace
+{
+    std::vector<std::string> args;
+}
 
 int main(int argc, const char * const argv[])
 {
+    frame::Layer::addLayer(std::make_shared<proj::GameLayer>());
     int result = EXIT_SUCCESS;
     try
     {
         args = std::vector<std::string>(argv + 1, argv + argc);
-        rndr::init("project", 1200, 900);
-        //
+        graph::init("project", 1200, 900);
         frame::init();
 
-        while(true)
+        bool playing = true;
+        while(playing)
         {
             input::pollInput();
-            rndr::clearWindow();
+            graph::clearWindow();
             frame::start();
 
             // Draw
 
-            rndr::present();
-            if(input::tryQuit())
-                break;
+            graph::present();
+            playing = !input::tryQuit();
 
             frame::end();
         }
     }
     catch(const std::exception &e)
     {
+        if(!graph::createWindowError(e.what()))
+            std::cerr << "Fatal: could not graphically display error message\n";
         std::cerr << "Fatal exception: " << e.what() << '\n';
         result = EXIT_FAILURE;
     }
 
-    rndr::quit();
+    graph::quit();
     return result;
 }
 

@@ -15,6 +15,7 @@ set(
   frame.cpp
   gameLayer.cpp
   input.cpp
+  graphics.cpp
   )
 
 set(
@@ -26,6 +27,7 @@ set(
   keyboardEvent.hpp
   mouseEvent.hpp
   input.hpp
+  graphics.hpp
   )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

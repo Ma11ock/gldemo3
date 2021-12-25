@@ -1,5 +1,5 @@
-#ifndef DOOM_MOUSE_EVENT_HPP
-#define DOOM_MOUSE_EVENT_HPP
+#ifndef PROJ_MOUSE_EVENT_HPP
+#define PROJ_MOUSE_EVENT_HPP
 
 #include "event.hpp"
 
@@ -8,11 +8,11 @@ namespace proj
     enum class MouseCode
     {
         None = 0,
-        Left,
-        Middle,
-        Right,
-        X1,
-        X2,
+        Left = 1,
+        Middle = 2,
+        Right = 3,
+        X1 = 4,
+        X2 = 5,
     };
 
     class MouseMove : public proj::Event
@@ -85,4 +85,4 @@ namespace proj
     };
 }
 
-#endif /* DOOM_MOUSE_EVENT_HPP */
+#endif /* PROJ_MOUSE_EVENT_HPP */

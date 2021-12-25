@@ -16,6 +16,9 @@ namespace frame
     class Layer
     {
     public:
+        // Add a layer to the queue.
+        static void addLayer(std::shared_ptr<Layer> layer);
+
         Layer();
         Layer(frame::duration deltaTime, frame::duration totalTime = {});
         virtual ~Layer() = default;
@@ -24,6 +27,7 @@ namespace frame
         virtual void update() { mTotalTime += mDeltaTime; }
         virtual void detach() { }
         virtual void draw(double alpha) { }
+        virtual void startFrame() { }
         virtual void handleEvent(std::shared_ptr<proj::Event> event) { }
 
         inline frame::duration getDeltaTime() const
@@ -69,8 +73,6 @@ namespace frame
     void end();
     /* Get current game tick. */
     std::uint64_t getTick();
-
-    void addLayer(std::shared_ptr<Layer> layer);
 
     std::uint32_t getGlobalFPS();
 

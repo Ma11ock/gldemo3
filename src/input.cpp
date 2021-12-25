@@ -5,6 +5,8 @@
 #include <tuple>
 #include <unordered_map>
 #include <type_traits>
+#include <iostream>
+#include <cstdint>
 #include "event.hpp"
 #include "frame.hpp"
 #include "keyboardEvent.hpp"
@@ -12,17 +14,18 @@
 
 namespace
 {
+    std::array<bool, 6> mouseButtonIsDown{false}; 
     /* True if the user is trying to quit. False if not. */
-    static bool isQuit = false;
+    bool isQuit = false;
     /* The x position of the mouse. */
-    static float mouseX = 0;
+    float mouseX = 0;
     /* The y position of the mouse. */
-    static float mouseY = 0;
+    float mouseY = 0;
     /* Keystates. */
-    static std::unordered_map<SDL_Keycode,
-                              std::tuple<proj::EventType, SDL_Keymod>> keys;
+    std::unordered_map<SDL_Keycode,
+                       std::tuple<proj::EventType, SDL_Keymod>> keys;
     /* String that gets SDL's text input. */
-    static std::string textInput;
+    std::string textInput;
     /* Converts SDL keyboard input data to a KeyInput. */
     inline std::tuple<proj::EventType, SDL_Keymod>
     createKeyModifier(SDL_KeyboardEvent &kbe)
@@ -191,7 +194,7 @@ void input::pollInput()
     for(auto &[key, value] : ::keys)
         value = std::make_tuple(proj::EventType::None, KMOD_NONE);
 
-    ::textInput.clear();
+    textInput.clear();
 
     SDL_StartTextInput();
     while(SDL_PollEvent(&event) != 0)
@@ -201,7 +204,7 @@ void input::pollInput()
         case SDL_TEXTINPUT:
             ::textInput += event.text.text;
             createTextEvent();
-        break;
+            break;
         case SDL_QUIT:
             isQuit = true;
             break;
@@ -230,17 +233,21 @@ void input::pollInput()
             ::createMouseMotionEvent(static_cast<float>(event.button.x),
                                      static_cast<float>(event.button.y));
         }
-            break;
+        break;
         case SDL_MOUSEBUTTONDOWN:
         {
-            ::createMouseButtonEvent(proj::EventType::MousePressed,
-                                     ::projMouseEventToCode(event.button.button));
+            auto mouseButton = projMouseEventToCode(event.button.button);
+            mouseButtonIsDown[static_cast<std::uint8_t>(mouseButton)] = true;
+            createMouseButtonEvent(proj::EventType::MousePressed,
+                                   mouseButton);
         }
-            break;
+        break;
         case SDL_MOUSEBUTTONUP:
         {
-            ::createMouseButtonEvent(proj::EventType::MouseReleased,
-                                     ::projMouseEventToCode(event.button.button));
+            auto mouseButton = projMouseEventToCode(event.button.button);
+            mouseButtonIsDown[static_cast<std::uint8_t>(mouseButton)] = false;
+            createMouseButtonEvent(proj::EventType::MouseReleased,
+                                   mouseButton);
         }
         break;
         case SDL_MOUSEWHEEL:
@@ -251,6 +258,10 @@ void input::pollInput()
             break;
         }
     }
+    for(std::size_t i = 0; i < mouseButtonIsDown.size(); i++)
+        if(mouseButtonIsDown[i])
+            createMouseButtonEvent(proj::EventType::MousePressed,
+                                   static_cast<proj::MouseCode>(i)); 
     SDL_StopTextInput();
 }
 
@@ -274,7 +285,7 @@ proj::EventType input::getKeyState(char code, const std::vector<proj::KeyModifie
 
 /* Get the key state of the '0' key . */
 proj::EventType input::getKeyState(proj::KeyCode code,
-                                 const std::vector<proj::KeyModifiers> &mods)
+                                   const std::vector<proj::KeyModifiers> &mods)
 {
     return ::internalGetKeyState(::charKeyCodeToSDL(code), mods);
 }

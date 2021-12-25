@@ -90,6 +90,7 @@ namespace
     // timing
     float deltaTime = 0.0f;	// time between current frame and last frame
     float lastFrame = 0.0f;
+
 }
 
 void rndr::init(const std::string &title, int width, int height)
@@ -229,3 +230,10 @@ void rndr::present()
 
     SDL_GL_SwapWindow(window);
 }
+
+
+void rndr::mouseMoved(float dx, float dy)
+{
+    camera.ProcessMouseMovement(dx, dy);
+}
+

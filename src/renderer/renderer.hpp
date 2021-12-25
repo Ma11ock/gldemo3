@@ -9,6 +9,7 @@ namespace rndr
     void quit();
     void present();
     void clearWindow();
+    void mouseMoved(float x, float y);
 }
 
 #endif /* RENDERER_HPP */

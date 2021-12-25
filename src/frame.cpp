@@ -27,15 +27,15 @@ namespace chron = std::chrono;
 namespace
 {
     /// The global frame counter, how many times the layers are drawn.
-    static std::uint32_t frames = 0;
+    std::uint32_t frames = 0;
     /// The global frame rate per second.
-    static std::uint32_t fps = 0;
+    std::uint32_t fps = 0;
     /// The global tickrate per second, how many times all the layers are ticked.
-    static std::uint64_t tps = 0;
+    std::uint64_t tps = 0;
     /// The global tick counter.
-    static std::uint64_t ticks = 0;
+    std::uint64_t ticks = 0;
     /// The global total tick counter.
-    static std::uint64_t totalTicks = 0;
+    std::uint64_t totalTicks = 0;
 
 
     frame::timePoint totalTime{};
@@ -49,9 +49,9 @@ namespace
         double alpha;
         frame::duration accumulator;
     };
-    static std::vector<layerData> layers;
+    std::vector<layerData> layers;
 
-    static std::queue<std::shared_ptr<proj::Event>> eventQ;
+    std::queue<std::shared_ptr<proj::Event>> eventQ;
 }
 
 /* Init the framerate system. */
@@ -76,16 +76,19 @@ void frame::start()
 {
     constexpr auto MAX_FRAME_TIME = 250ms;
 
-    /* Handle events. */
-    while(!::eventQ.empty())
-    {
-        auto &curEvent = ::eventQ.front();
+    for(auto &[layer, _, __] : layers)
+        layer->startFrame();
 
-        for(auto &[layer, _, __] : ::layers)
+    /* Handle events. */
+    while(!eventQ.empty())
+    {
+        auto &curEvent = eventQ.front();
+
+        for(auto &[layer, _, __] : layers)
             if(!curEvent->isHandled())
                 layer->handleEvent(curEvent);
 
-        ::eventQ.pop();
+        eventQ.pop();
     }
 
     frame::timePoint newTime = frame::sysClock::now();
@@ -95,9 +98,8 @@ void frame::start()
     currentTime = newTime;
 
     /* Handle events and tick from top to bottom. */
-    for(auto iter = ::layers.rbegin(); iter < ::layers.rend(); iter++)
+    for(auto &[layer, alpha, accumulator] : layers)
     {
-        auto &[layer, alpha, accumulator] = *iter;
         accumulator += frameTime;
         auto deltaTime = layer->getDeltaTime();
         if(deltaTime > 0ms)
@@ -113,15 +115,13 @@ void frame::start()
         else
             layer->update();
 
-        ::ticks++;
-
+        ticks++;
     }
 
     /* Draw from bottom to top. */
-    for(auto &[layer, alpha, _] : ::layers)
+    for(auto &[layer, alpha, _] : layers)
         layer->draw(alpha);
-    ::frames++;
-
+    frames++;
 }
 
 void frame::end()
@@ -129,11 +129,11 @@ void frame::end()
     auto static timer = frame::sysClock::now();
     if(frame::sysClock::now() - timer >= 1s)
     {
-        ::fps = ::frames;
-        ::tps = ::ticks;
-        ::totalTicks += ::ticks;
-        ::frames = 0;
-        ::ticks = 0;
+        fps = frames;
+        tps = ticks;
+        totalTicks += ticks;
+        frames = 0;
+        ticks = 0;
         timer += 1s;
     }
 }
@@ -141,12 +141,12 @@ void frame::end()
 /* Get current game tick. */
 std::uint64_t frame::getTick()
 {
-    return ::totalTicks;
+    return totalTicks;
 }
 
-void frame::addLayer(std::shared_ptr<frame::Layer> layer)
+void frame::Layer::addLayer(std::shared_ptr<frame::Layer> layer)
 {
-    ::layers.push_back(layerData{std::move(layer), 0.0, frame::duration{}});
+    layers.push_back(layerData{std::move(layer), 0.0, frame::duration{}});
 }
 
 frame::Layer::Layer()
