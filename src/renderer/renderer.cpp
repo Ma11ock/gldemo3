@@ -1,6 +1,5 @@
 #include "glutil.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION 1
 
 extern "C" {
 #include <SDL2/SDL.h>
@@ -16,6 +15,7 @@ extern "C" {
 #include "matrix.hpp"
 #include "loadobj.hpp"
 #include "VertexArray.hpp"
+#include "Texture.hpp"
 
 #include <glm/glm.hpp>
 #include <string>
@@ -27,36 +27,20 @@ using namespace std::string_literals;
 struct thing
 {
     buffers bufs;
-    GLuint texId = 0;
+    Texture tex;
     std::unique_ptr<VertexArray> va;
 
     void draw(const Shader &shader)
     {
         ms::pushMatricesToShaders(shader);
-        glBindTextureUnit(0, texId);
+        tex.bind();
         va->draw();
     }
 
     void createThing(const std::filesystem::path &objPath,
                      const std::filesystem::path &texPath)
     {
-
-        int texWidth = 0;
-        int texHeight = 0;
-        int nrChans = 0;
-        std::uint8_t *ptr = stbi_load(texPath.c_str(), &texWidth, &texHeight,
-                                      &nrChans, 3);
-        if(!ptr)
-            throw std::invalid_argument("Could not open texture at "s + texPath.generic_string());
-
-        glCreateTextures(GL_TEXTURE_2D, 1, &texId);
-        glTextureParameteri(texId, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTextureParameteri(texId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        glTextureStorage2D(texId, 1, GL_RGB8, texWidth, texHeight);
-        glTextureSubImage2D(texId, 0, 0, 0, texWidth, texHeight, GL_RGB, GL_UNSIGNED_BYTE, ptr);
-
-        stbi_image_free(ptr);
+        tex = Texture(texPath, 3);
 
         // OBJ file.
         bufs = loadObjFile(objPath);
@@ -95,7 +79,7 @@ namespace
 
 void rndr::init(const std::string &title, int width, int height)
 {
-    stbi_set_flip_vertically_on_load(true); 
+    Texture::init();
     if(auto ret = SDL_Init(SDL_INIT_EVERYTHING);
        ret != 0)
         throw std::runtime_error(

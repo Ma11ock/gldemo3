@@ -268,7 +268,7 @@ void input::pollInput()
 /* Return true if the user is trying to quit. */
 bool input::tryQuit()
 {
-    return ::isQuit;
+    return isQuit;
 }
 
 /* Get the coordinates of the mouse (x,y). */
@@ -280,20 +280,20 @@ std::tuple<float, float> input::getMousePos()
 /* Get the key state of the '0' key . */
 proj::EventType input::getKeyState(char code, const std::vector<proj::KeyModifiers> &mods)
 {
-    return ::internalGetKeyState(static_cast<SDL_Keycode>(code), mods);
+    return internalGetKeyState(static_cast<SDL_Keycode>(code), mods);
 }
 
 /* Get the key state of the '0' key . */
 proj::EventType input::getKeyState(proj::KeyCode code,
                                    const std::vector<proj::KeyModifiers> &mods)
 {
-    return ::internalGetKeyState(::charKeyCodeToSDL(code), mods);
+    return internalGetKeyState(::charKeyCodeToSDL(code), mods);
 }
 /* Get a string of the last alphanumeric keypresses.
    Returns an empty string if no keypresses occurred. */
 std::string input::getAlphaNumericKeyPresses()
 {
-    return ::textInput;
+    return textInput;
 }
 
 

@@ -13,6 +13,7 @@ set(
   matrix.cpp
   renderer.cpp
   loadobj.cpp
+  Texture.cpp
   )
 
 set(
@@ -26,6 +27,7 @@ set(
   matrix.hpp
   renderer.hpp
   loadobj.hpp
+  Texture.hpp
   )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
