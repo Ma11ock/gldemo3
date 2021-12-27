@@ -42,11 +42,15 @@ public:
     {
         std::array unpack = {compileShader(std::forward<Args>(args))...};
         mId = GLCall(glCreateProgram());
+        std::cout << "Compiling shaders.\n";
         for(auto i : unpack)
             GLCall(glAttachShader(mId, i));
+        std::cout << "Linking shaders.\n";
         GLCall(glLinkProgram(mId));
+        std::cout << "Deleting shaders.\n";
         for(auto i : unpack)
             GLCall(glDeleteShader(i));
+        std::cout << "Done creating shader program.\n";
     }
 
     std::uint32_t compileShader(const std::filesystem::path &path)
@@ -77,8 +81,6 @@ public:
         shader = GLCall(glCreateShader(type));
         GLCall(glShaderSource(shader, 1, &shaderCString, nullptr));
         GLCall(glCompileShader(shader));
-        checkCompileErrors(shader, "");
-
 
         return shader;
     }
@@ -164,31 +166,5 @@ public:
 
 private:
     std::uint32_t mId;
-    // utility function for checking shader compilation/linking errors.
-    // ------------------------------------------------------------------------
-    void checkCompileErrors(GLuint shader, std::string type)
-    {
-        GLint success;
-        GLchar infoLog[1024];
-        if(type != "PROGRAM")
-        {
-            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-            if(!success)
-            {
-                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                throw std::invalid_argument("Could not create shaders.");
-            }
-        }
-        else
-        {
-            glGetProgramiv(shader, GL_LINK_STATUS, &success);
-            if(!success)
-            {
-                glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                throw std::invalid_argument("Could not create shaders.");
-            }
-        }
-
-    }
 };
 #endif

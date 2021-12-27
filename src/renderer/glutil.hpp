@@ -3,6 +3,8 @@
 
 #include <string_view>
 #include <string>
+#include <vector>
+#include <glm/glm.hpp>
 #include <fmt/core.h>
 #include <exception>
 #include <stdexcept>
@@ -22,6 +24,32 @@ inline std::string_view curGlCommand;
 #else
 #define GLCall(line) line;
 #endif // DEBUG
+
+struct buffers
+{
+    std::vector<glm::vec3> vertices;
+    std::vector<glm::vec2> texUVs;
+    std::vector<glm::vec3> normals;
+    std::vector<std::uint32_t> indices;
+
+    static buffers createFromData(const std::vector<glm::vec3> &verts,
+                                  const std::vector<glm::vec2> &uvs,
+                                  const std::vector<glm::vec3> &normals);
+};
+
+struct interleavedType
+{
+    glm::vec3 vertexCoords;
+    glm::vec2 texCoords;
+    glm::vec3 normalCoords;
+};
+
+
+struct interleavedBuffers
+{
+    std::vector<interleavedType> interleavedBufs;
+    std::vector<std::uint32_t> indexBuf;
+};
 
 class OpenGLException : public std::exception
 {
@@ -50,6 +78,17 @@ public:
 private:
     std::string mWhat;
 };
+
+inline interleavedBuffers bufsToInterleaved(const buffers &bufs)
+{
+    std::vector<interleavedType> overallBuffer(bufs.vertices.size());
+
+    for(std::size_t i = 0; i < bufs.vertices.size(); i++)
+        overallBuffer[i] = { bufs.vertices[i], bufs.texUVs[i],
+            bufs.normals[i] };
+
+    return interleavedBuffers{ overallBuffer, bufs.indices };
+}
 
 
 #endif /* GLUTIL_HPP */

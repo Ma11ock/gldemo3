@@ -38,6 +38,7 @@ add_library(
   ${GLRENDERER_RENDERER_HEADERS}
   )
 
+target_compile_definitions(glrenderer PUBLIC "$<$<CONFIG:DEBUG>:DEBUG>")
 
 target_compile_features(glrenderer PRIVATE cxx_std_17)
 target_compile_features(glrenderer PRIVATE c_std_99)

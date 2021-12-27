@@ -7,6 +7,7 @@
 #define PROJ_GAME_LAYER_HPP
 
 #include "frame.hpp"
+#include "graphics.hpp"
 
 
 #include <cstdint>

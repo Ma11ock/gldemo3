@@ -40,6 +40,7 @@ add_executable(
   )
 add_subdirectory(renderer)
 
+target_compile_definitions(glproject PUBLIC "$<$<CONFIG:DEBUG>:DEBUG>")
 target_compile_features(glproject PRIVATE cxx_std_17)
 target_compile_features(glproject PRIVATE c_std_99)
 

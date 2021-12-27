@@ -1,6 +1,5 @@
 #include "glutil.hpp"
 
-
 extern "C" {
 #include <SDL2/SDL.h>
     // TODO transition to glad.
@@ -24,49 +23,91 @@ extern "C" {
 
 using namespace std::string_literals;
 
-struct thing
-{
-    buffers bufs;
-    Texture tex;
-    std::unique_ptr<VertexArray> va;
-
-    void draw(const Shader &shader)
-    {
-        ms::pushMatricesToShaders(shader);
-        tex.bind();
-        va->draw();
-    }
-
-    void createThing(const std::filesystem::path &objPath,
-                     const std::filesystem::path &texPath)
-    {
-        tex = Texture(texPath, 3);
-
-        // OBJ file.
-        bufs = loadObjFile(objPath);
-        std::vector<interleavedType> overallBuffer(bufs.vertices.size());
-
-        for(std::size_t i = 0; i < bufs.vertices.size(); i++)
-            overallBuffer[i] = { bufs.vertices[i], bufs.texUVs[i],
-                bufs.normals[i] };
-
-        va = std::make_unique<VertexArray>(overallBuffer, bufs.indices);
-    }
-};
 
 namespace
 {
-    thing claire;
-    thing tyrant;
-    thing leon;
-    thing teapot;
+    void openGLMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity,
+                               GLsizei length, const GLchar *message, const void *userParam)
+    {
+        auto errSrc = [source]()
+        {
+            switch (source)
+            {
+            case GL_DEBUG_SOURCE_API: return "API";
+            case GL_DEBUG_SOURCE_WINDOW_SYSTEM: return "WINDOW SYSTEM";
+            case GL_DEBUG_SOURCE_SHADER_COMPILER: return "SHADER COMPILER";
+            case GL_DEBUG_SOURCE_THIRD_PARTY: return "THIRD PARTY";
+            case GL_DEBUG_SOURCE_APPLICATION: return "APPLICATION";
+            case GL_DEBUG_SOURCE_OTHER: return "OTHER";
+            default: return "Unknown";
+            }
+        };
+
+        auto errType = [type]()
+        {
+            switch (type)
+            {
+            case GL_DEBUG_TYPE_ERROR: return "ERROR";
+            case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return "DEPRECATED_BEHAVIOR";
+            case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: return "UNDEFINED_BEHAVIOR";
+            case GL_DEBUG_TYPE_PORTABILITY: return "PORTABILITY";
+            case GL_DEBUG_TYPE_PERFORMANCE: return "PERFORMANCE";
+            case GL_DEBUG_TYPE_MARKER: return "MARKER";
+            case GL_DEBUG_TYPE_OTHER: return "OTHER";
+            default: return "Unknown";
+            }
+        };
+
+
+        std::string_view severityStr;
+        switch (severity)
+        {
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+#ifdef DEBUG
+
+            std::cout << "In " << curFile << ':' << curLine << ": "
+                      << curGlCommand << ": ";
+    
+#endif // DEBUG
+            std::cout << errSrc() << ", " << errType() << ", Notification, "
+                      << id << ": " << message << '\n';
+            return;
+            break;
+        case GL_DEBUG_SEVERITY_LOW:
+            severityStr = "LOW";
+            break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            severityStr = "MEDIUM";
+            break;
+        case GL_DEBUG_SEVERITY_HIGH:
+#ifdef DEBUG
+            throw OpenGLException(message, errSrc(), errType(),
+                                  curGlCommand, curFile, curLine);
+#else
+            throw OpenGLException(message, errSrc(), errType());
+#endif // DEBUG
+            break;
+        default:
+            severityStr = "Unknown";
+            break;
+        }
+#ifdef DEBUG
+
+        std::cerr << "In " << curFile << ':' << curLine << ": "
+                  << curGlCommand << ": ";
+    
+#endif // DEBUG
+        std::cerr << errSrc() << ", " << errType() << ", " << severityStr 
+                  << ", " << id << ": " << message << '\n';
+
+    }
+
     Camera camera(glm::vec3(30.f, 30.f, 30.f));
     // SDL window.
     SDL_Window *window = nullptr;
     // SDLGL context.
     SDL_GLContext context = {};
 
-    Shader ourShader;
     float scrWidth = 0.f;
     float scrHeight = 0.f;
     float lastX = 0.f;
@@ -74,7 +115,6 @@ namespace
     // timing
     float deltaTime = 0.0f;	// time between current frame and last frame
     float lastFrame = 0.0f;
-
 }
 
 void rndr::init(const std::string &title, int width, int height)
@@ -129,18 +169,16 @@ void rndr::init(const std::string &title, int width, int height)
     if(glewError != GLEW_OK)
         throw std::runtime_error(fmt::format("Could not initialize glew: {}",
                                              glewGetErrorString(glewError)));
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(openGLMessageCallback, nullptr);
 
     // Use vsync.
     if(SDL_GL_SetSwapInterval(1) < 0)
         std::cerr << "Warning: unable to use vsync: " << SDL_GetError() << '\n';
 
-    ourShader = Shader("main.vert", "main.frag");
-
-    claire.createThing("claire.obj", "claire.bmp");
-    tyrant.createThing("tyrant.obj", "tyrant.bmp");
-    leon.createThing("leon.obj", "leon.bmp");
-    teapot.createThing("teapot.obj", "earth.jpg");
-
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);    
 }
 
 void rndr::quit()
@@ -165,53 +203,6 @@ void rndr::clearWindow()
 
 void rndr::present()
 {
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_STENCIL_TEST);    
-    ourShader.use();
-
-    
-    ms::setMatrixMode(ms::Stack::Projection, true);
-    ms::perspective(glm::radians(camera.Zoom),
-                    1.f,
-                    0.1f,
-                    1000.f);
-
-    ms::setMatrixMode(ms::Stack::View, true);
-    ms::loadMatrix(camera.GetViewMatrix());
-
-    glm::vec3 lightColor(1.f, 1.f, 1.f);
-
-    ourShader.set("uViewPos", camera.Position);
-    ourShader.set("uNumDirLights", 1u);
-    ourShader.set("uNumPointLights", 0u);
-    ourShader.set("uNumSpotLights", 0u);
-    ourShader.set("uDirLights[0].specular", lightColor * glm::vec3(1.f));
-    ourShader.set("uDirLights[0].diffuse", lightColor * glm::vec3(1.f));
-    ourShader.set("uDirLights[0].ambient", lightColor * glm::vec3(0.2f));
-    ourShader.set("uDirLights[0].direction", -0.2f, -1.f, -0.3f);
-    ourShader.set("uMaterial.diffuse", 0);
-    ourShader.set("uMaterial.specular", 0);
-    ourShader.set("uMaterial.shininess", 64.f);
-
-    ms::setMatrixMode(ms::Stack::Model, true);
-    ms::translate(10.f, 80.f, 20.f);
-    teapot.draw(ourShader);
-    ms::loadIdentity();
-    ms::translate(glm::vec3(20.f, 0.f, 10.f));
-
-    ms::rotate(glm::sin(std::chrono::system_clock::now().time_since_epoch().count() / 1000000),
-               glm::vec3(0.f, 1.f, 0.f));
-    claire.draw(ourShader);
-
-    ms::loadIdentity();
-    ms::translate(glm::vec3(15.f, 0.f, 45.f));
-    tyrant.draw(ourShader);
-
-    ms::loadIdentity();
-    ms::translate(glm::vec3(-10.f, 0.f, 20.f));
-    ms::rotate(glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
-    leon.draw(ourShader);
-
     SDL_GL_SwapWindow(window);
 }
 

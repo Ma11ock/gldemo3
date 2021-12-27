@@ -19,13 +19,13 @@ namespace
 
 int main(int argc, const char * const argv[])
 {
-    frame::Layer::addLayer(std::make_shared<proj::GameLayer>());
     int result = EXIT_SUCCESS;
     try
     {
         args = std::vector<std::string>(argv + 1, argv + argc);
         graph::init("project", 1200, 900);
         frame::init();
+        frame::Layer::addLayer(std::make_shared<proj::GameLayer>());
 
         bool playing = true;
         while(playing)

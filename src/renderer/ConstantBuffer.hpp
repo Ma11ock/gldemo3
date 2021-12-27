@@ -8,13 +8,6 @@
 #include <glm/glm.hpp>
 #include <cstddef>
 
-struct interleavedType
-{
-    glm::vec3 vertexCoords;
-    glm::vec2 texCoords;
-    glm::vec3 normalCoords;
-};
-
 // Constant buffer for vertices, texture coordinates, and normals.
 class ConstantBuffer : public Bindable
 {
