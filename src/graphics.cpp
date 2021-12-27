@@ -8,7 +8,6 @@ extern "C" {
 #include "renderer/Texture.hpp"
 #include "renderer/VertexArray.hpp"
 #include "renderer/renderer.hpp"
-#include "renderer/matrix.hpp"
 #include "renderer/shader.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -56,11 +55,6 @@ void graph::present()
     rndr::present();
 }
 
-void graph::mouseMoved(float x, float y)
-{
-    rndr::mouseMoved(x, y);
-}
-
 graph::Thing::Thing(const std::filesystem::path &objPath,
              const std::filesystem::path &texPath,
              std::shared_ptr<Shader> shader)
@@ -70,15 +64,17 @@ graph::Thing::Thing(const std::filesystem::path &objPath,
 {
 }
 
-void graph::Thing::draw()
+void graph::Thing::draw(const glm::mat4 &view, const glm::mat4 &projection)
 {
-    ms::setMatrixMode(ms::Stack::Model);
-    ms::push();
-    ms::loadMatrix(mTransforms);
-    ms::pushMatricesToShaders(*mShader.get());
+    glm::mat4 modelViewMatrix = view * mTransforms;
+    glm::mat4 modelViewProjectionMatrix = projection * modelViewMatrix;
+    
+    mShader->set("uModelViewMatrix", modelViewMatrix);
+    mShader->set("uModelViewProjectionMatrix", modelViewProjectionMatrix);
+    mShader->set("uModelMatrix", mTransforms);
+    mShader->set("uNormalMatrix", glm::mat3(glm::transpose(glm::inverse(mTransforms))));
     mTexture->bind();
     mVao->bind();
-    ms::pop();
 }
 
 void graph::Thing::translate(const glm::vec3 &xyz)

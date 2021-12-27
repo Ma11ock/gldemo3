@@ -20,7 +20,6 @@ public:
                 const std::vector<glm::vec3> &normals,
                 const std::vector<std::uint32_t> &indices) : Bindable()
     {
-        // TODO vertex array should be bindable
         GLCall(glCreateVertexArrays(1, &mId));
         mVertexBuffer = std::make_unique<ConstantBuffer>(vertices, 0, mId);
         mTextureBuffer = std::make_unique<ConstantBuffer>(texCoords, 1, mId);

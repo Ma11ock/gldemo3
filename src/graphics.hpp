@@ -21,8 +21,6 @@ namespace graph
     void clearWindow();
     void present();
 
-    void mouseMoved(float x, float y); 
-
     class Thing
     {
     public:
@@ -32,7 +30,7 @@ namespace graph
         Thing() = default;
         virtual ~Thing() = default;
 
-        void draw();
+        void draw(const glm::mat4 &view, const glm::mat4 &projection);
         void translate(const glm::vec3 &xyz);
         void scale(const glm::vec3 &xyz);
         void rotate(float radAngle, const glm::vec3 &xyz);

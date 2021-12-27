@@ -36,7 +36,7 @@ Texture::Texture(const fs::path &path, int numChannels)
     glTextureParameteri(mId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     glTextureStorage2D(mId, 1, GL_RGB8, mWidth, mHeight);
-    glTextureSubImage2D(mId, 0, 0, 0, mWidth, mHeight, GL_RGB, GL_UNSIGNED_BYTE, ptr);
+    glTextureSubImage2D(mId, 0, 0, 0, mWidth, mHeight, GL_RGBA, GL_UNSIGNED_BYTE, ptr);
 
     stbi_image_free(ptr);
 }

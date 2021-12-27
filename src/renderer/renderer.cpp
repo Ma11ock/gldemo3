@@ -11,7 +11,6 @@ extern "C" {
 #include "renderer.hpp"
 #include "shader.hpp"
 #include "Camera.hpp"
-#include "matrix.hpp"
 #include "loadobj.hpp"
 #include "VertexArray.hpp"
 #include "Texture.hpp"
@@ -102,7 +101,6 @@ namespace
 
     }
 
-    Camera camera(glm::vec3(30.f, 30.f, 30.f));
     // SDL window.
     SDL_Window *window = nullptr;
     // SDLGL context.
@@ -206,9 +204,4 @@ void rndr::present()
     SDL_GL_SwapWindow(window);
 }
 
-
-void rndr::mouseMoved(float dx, float dy)
-{
-    camera.ProcessMouseMovement(dx, dy);
-}
 

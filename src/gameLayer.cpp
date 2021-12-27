@@ -9,7 +9,6 @@ using namespace std::chrono_literals;
 #include "keyboardEvent.hpp"
 #include "renderer/shader.hpp"
 #include "renderer/Camera.hpp"
-#include "renderer/matrix.hpp"
 
 namespace
 {
@@ -36,8 +35,6 @@ proj::GameLayer::GameLayer()
     teapot->translate(glm::vec3(20.f, 0.f, 10.f));
 
     claire->translate(glm::vec3(0.f, 1.f, 0.f));
-    claire->rotate(glm::sin(std::chrono::system_clock::now().time_since_epoch().count() / 1000000),
-                   glm::vec3(0.f, 1.f, 0.f));
 
     tyrant->translate(glm::vec3(15.f, 0.f, 45.f));
 
@@ -47,6 +44,8 @@ proj::GameLayer::GameLayer()
 
 void proj::GameLayer::update()
 {
+    claire->rotate(glm::sin(std::chrono::system_clock::now().time_since_epoch().count() / 1000000),
+                   glm::vec3(0.f, 1.f, 0.f));
     if(mMouseMoved)
     {
         static bool firstMouse = true;
@@ -63,7 +62,7 @@ void proj::GameLayer::update()
         mLastMouseX = mXpos;
         mLastMouseY = mYpos;
         if(mRightButtonIsPressed)
-            graph::mouseMoved(dx, dy);
+            camera.ProcessMouseMovement(dx, dy);
     }
 }
 
@@ -71,16 +70,17 @@ void proj::GameLayer::draw(double alpha)
 {
     // TODO get rid of matrix stack.
     shaderProgram->use();
-    ms::setMatrixMode(ms::Stack::Projection, true);
-    ms::perspective(glm::radians(camera.Zoom),
-                    1.f,
-                    0.1f,
-                    1000.f);
+    auto persp = glm::perspective(glm::radians(camera.Zoom),
+                                  1.f,
+                                  0.1f,
+                                  1000.f);
 
-    ms::setMatrixMode(ms::Stack::View, true);
-    ms::loadMatrix(camera.GetViewMatrix());
     glm::vec3 lightColor(1.f, 1.f, 1.f);
 
+    shaderProgram->set("uViewMatrix", camera.GetViewMatrix());
+    shaderProgram->set("uProjectionMatrix", persp);
+    shaderProgram->set("uTextureMatrix", glm::mat4(1.f));
+    shaderProgram->set("uColorMatrix", glm::mat4(1.f));
     shaderProgram->set("uViewPos", camera.Position);
     shaderProgram->set("uNumDirLights", 1u);
     shaderProgram->set("uNumPointLights", 0u);
@@ -92,12 +92,11 @@ void proj::GameLayer::draw(double alpha)
     shaderProgram->set("uMaterial.diffuse", 0);
     shaderProgram->set("uMaterial.specular", 0);
     shaderProgram->set("uMaterial.shininess", 64.f);
-    ms::setMatrixMode(ms::Stack::Model, true);
 
-    claire->draw();
-    tyrant->draw();
-    leon->draw();
-    teapot->draw();
+    claire->draw(camera.GetViewMatrix(), persp);
+    tyrant->draw(camera.GetViewMatrix(), persp);
+    leon->draw(camera.GetViewMatrix(), persp);
+    teapot->draw(camera.GetViewMatrix(), persp);
 }
 
 

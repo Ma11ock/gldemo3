@@ -10,7 +10,6 @@ cmake_policy(SET CMP0075 NEW)
 
 set(
   GLRENDERER_RENDERER_SOURCES
-  matrix.cpp
   renderer.cpp
   loadobj.cpp
   Texture.cpp
@@ -24,7 +23,6 @@ set(
   IndexBuffer.hpp
   ConstantBuffer.hpp
   Drawable.hpp
-  matrix.hpp
   renderer.hpp
   loadobj.hpp
   Texture.hpp
