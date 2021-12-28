@@ -68,7 +68,7 @@ target_include_directories(glproject PUBLIC ${SDL2_INCLUDE_DIR})
 target_include_directories(glproject PUBLIC ${SDL2_MIXER_INCLUDE_DIRS})
 target_include_directories(glproject PUBLIC ${SDL2_TTF_INCLUDE_DIRS})
 target_include_directories(glproject PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS})
-
+target_include_directories(glproject PUBLIC ${PROJECT_SOURCE_DIR}/external/)
 
 target_link_libraries(glproject PUBLIC fmt)
 target_link_libraries(glproject PUBLIC GL)
