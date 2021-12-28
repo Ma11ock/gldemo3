@@ -3,7 +3,7 @@
 
 #include "Bindable.hpp"
 #include <vector>
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <cstddef>

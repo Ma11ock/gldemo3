@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 class IndexBuffer : public Bindable
 {

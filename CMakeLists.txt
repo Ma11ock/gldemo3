@@ -38,7 +38,14 @@ if(NOT SDL2_MIXER_FOUND)
   message(FATAL_ERROR "Could not find system SDL_ttf")
 endif()
 
+find_package(OpenGL REQUIRED)
 
+if(NOT OPENGL_FOUND)
+  message(FATAL_ERROR "Could not find OpenGL")
+endif()
+
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/glad)
 
 add_subdirectory(src)
 

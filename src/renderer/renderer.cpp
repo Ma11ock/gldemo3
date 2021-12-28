@@ -1,12 +1,12 @@
-#include "glutil.hpp"
 
 extern "C" {
+#include <glad/glad.h>
 #include <SDL2/SDL.h>
     // TODO transition to glad.
-#include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
-#include <stb/stb_image.h>
 }
+
+#include "glutil.hpp"
 
 #include "renderer.hpp"
 #include "shader.hpp"
@@ -160,13 +160,10 @@ void rndr::init(const std::string &title, int width, int height)
         // TODO check other OpenGL values.
     }
 
+    if(!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
+        throw std::runtime_error(fmt::format("Could not init glad"));
 
-    // Initialize glew.
-    glewExperimental = GL_TRUE;
-    auto glewError = glewInit();
-    if(glewError != GLEW_OK)
-        throw std::runtime_error(fmt::format("Could not initialize glew: {}",
-                                             glewGetErrorString(glewError)));
+
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(openGLMessageCallback, nullptr);

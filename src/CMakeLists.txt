@@ -58,6 +58,9 @@ target_compile_features(glproject PRIVATE c_std_99)
 # Link libm
 target_link_libraries(glproject PUBLIC m)
 target_link_libraries(glproject PUBLIC fmt)
+target_link_libraries(glproject PUBLIC glad)
+target_link_libraries(glproject PUBLIC OpenGL::GL)
+target_link_libraries(glproject PUBLIC ${CMAKE_DL_LIBS})
 # Link SDL2 libs.
 target_link_libraries(glproject PUBLIC ${SDL2_LIBRARY})
 target_link_libraries(glproject PUBLIC ${SDL2_MIXER_LIBRARIES})
@@ -70,14 +73,11 @@ target_include_directories(glproject PUBLIC ${SDL2_TTF_INCLUDE_DIRS})
 target_include_directories(glproject PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS})
 target_include_directories(glproject PUBLIC ${PROJECT_SOURCE_DIR}/external/)
 
-target_link_libraries(glproject PUBLIC fmt)
-target_link_libraries(glproject PUBLIC GL)
-target_link_libraries(glproject PUBLIC GLEW)
 
 if(${CMAKE_CXX_BYTE_ORDER} STREQUAL  "BIG_ENDIAN")
-  target_compile_definitions(glproject PUBLIC DOOM_BIG_ENDIAN=1)
+  target_compile_definitions(glproject PUBLIC PROJ_BIG_ENDIAN=1)
 else()
-  target_compile_definitions(glproject PUBLIC DOOM_LITTLE_ENDIAN=1)
+  target_compile_definitions(glproject PUBLIC PROJ_LITTLE_ENDIAN=1)
 endif()
 
 add_custom_target(run
