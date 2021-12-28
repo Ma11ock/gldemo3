@@ -44,9 +44,9 @@ if(NOT OPENGL_FOUND)
   message(FATAL_ERROR "Could not find OpenGL")
 endif()
 
-
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/glad)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/glm)
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/fmt)
 
 add_subdirectory(src)
 

@@ -6,7 +6,7 @@ add_library(glad
   glad.h
   glad.c
   )
-
+add_library(glad::glad ALIAS glad)
 
 target_compile_features(glad PRIVATE cxx_std_17)
 target_compile_features(glad PRIVATE c_std_99)

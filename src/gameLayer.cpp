@@ -44,7 +44,9 @@ proj::GameLayer::GameLayer()
 
 void proj::GameLayer::update()
 {
-    claire->rotate(glm::sin(std::chrono::system_clock::now().time_since_epoch().count() / 1000000),
+    claire->rotate(glm::sin(std::chrono::system_clock::now()
+                            .time_since_epoch()
+                            .count() / 1000000),
                    glm::vec3(0.f, 1.f, 0.f));
     if(mMouseMoved)
     {

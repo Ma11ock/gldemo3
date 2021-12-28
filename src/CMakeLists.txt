@@ -57,23 +57,22 @@ target_compile_features(glproject PRIVATE c_std_99)
 
 # Link libm
 target_link_libraries(glproject PUBLIC m)
-target_link_libraries(glproject PUBLIC fmt)
-target_link_libraries(glproject PUBLIC glad)
+target_link_libraries(glproject PUBLIC glad::glad)
 target_link_libraries(glproject PUBLIC OpenGL::GL)
 target_link_libraries(glproject PUBLIC ${CMAKE_DL_LIBS})
-target_link_libraries(glproject PUBLIC glm)
+target_link_libraries(glproject PUBLIC glm::glm)
+target_link_libraries(glproject PUBLIC fmt::fmt)
 # Link SDL2 libs.
 target_link_libraries(glproject PUBLIC ${SDL2_LIBRARY})
 target_link_libraries(glproject PUBLIC ${SDL2_MIXER_LIBRARIES})
 target_link_libraries(glproject PUBLIC ${SDL2_TTF_LIBRARIES})
-target_link_libraries(glproject PUBLIC ${SDL2_IMAGE_LIBRARIES})
 
 target_include_directories(glproject PUBLIC ${SDL2_INCLUDE_DIR})
 target_include_directories(glproject PUBLIC ${SDL2_MIXER_INCLUDE_DIRS})
 target_include_directories(glproject PUBLIC ${SDL2_TTF_INCLUDE_DIRS})
-target_include_directories(glproject PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS})
 target_include_directories(glproject PUBLIC ${PROJECT_SOURCE_DIR}/external/)
 target_include_directories(glproject PUBLIC ${PROJECT_SOURCE_DIR}/external/glm)
+target_include_directories(glproject PUBLIC ${PROJECT_SOURCE_DIR}/external/fmt/include/)
 
 
 if(${CMAKE_CXX_BYTE_ORDER} STREQUAL  "BIG_ENDIAN")
