@@ -46,6 +46,7 @@ endif()
 
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/glad)
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/glm)
 
 add_subdirectory(src)
 
