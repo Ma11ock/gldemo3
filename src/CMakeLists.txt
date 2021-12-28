@@ -16,6 +16,9 @@ set(
   gameLayer.cpp
   input.cpp
   graphics.cpp
+  renderer/renderer.cpp
+  renderer/loadobj.cpp
+  renderer/Texture.cpp
   )
 
 set(
@@ -28,6 +31,15 @@ set(
   mouseEvent.hpp
   input.hpp
   graphics.hpp
+  renderer/glutil.hpp
+  renderer/Bindable.hpp
+  renderer/VertexArray.hpp
+  renderer/IndexBuffer.hpp
+  renderer/ConstantBuffer.hpp
+  renderer/Drawable.hpp
+  renderer/renderer.hpp
+  renderer/loadobj.hpp
+  renderer/Texture.hpp
   )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -38,7 +50,6 @@ add_executable(
   ${GLPROJECT_SOURCES}
   ${GLPROJECT_HEADERS}
   )
-add_subdirectory(renderer)
 
 target_compile_definitions(glproject PUBLIC "$<$<CONFIG:DEBUG>:DEBUG>")
 target_compile_features(glproject PRIVATE cxx_std_17)
@@ -58,7 +69,10 @@ target_include_directories(glproject PUBLIC ${SDL2_MIXER_INCLUDE_DIRS})
 target_include_directories(glproject PUBLIC ${SDL2_TTF_INCLUDE_DIRS})
 target_include_directories(glproject PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS})
 
-target_link_libraries(glproject PUBLIC glrenderer)
+
+target_link_libraries(glproject PUBLIC fmt)
+target_link_libraries(glproject PUBLIC GL)
+target_link_libraries(glproject PUBLIC GLEW)
 
 if(${CMAKE_CXX_BYTE_ORDER} STREQUAL  "BIG_ENDIAN")
   target_compile_definitions(glproject PUBLIC DOOM_BIG_ENDIAN=1)
