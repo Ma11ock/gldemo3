@@ -7,7 +7,7 @@ using namespace std::chrono_literals;
 #include "mouseEvent.hpp"
 #include "graphics.hpp"
 #include "keyboardEvent.hpp"
-#include "renderer/shader.hpp"
+#include "renderer/Shader.hpp"
 #include "renderer/Camera.hpp"
 
 namespace

@@ -9,7 +9,7 @@ extern "C" {
 #include "glutil.hpp"
 
 #include "renderer.hpp"
-#include "shader.hpp"
+#include "Shader.hpp"
 #include "Camera.hpp"
 #include "loadobj.hpp"
 #include "VertexArray.hpp"
@@ -22,11 +22,12 @@ extern "C" {
 
 using namespace std::string_literals;
 
-
 namespace
 {
-    void openGLMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity,
-                               GLsizei length, const GLchar *message, const void *userParam)
+    void openGLMessageCallback(GLenum source, GLenum type, GLuint id,
+                               GLenum severity, GLsizei length,
+                               const GLchar *message,
+                               const GLvoid *userParam)
     {
         auto errSrc = [source]()
         {

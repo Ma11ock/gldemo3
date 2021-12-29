@@ -8,7 +8,7 @@ extern "C" {
 #include "renderer/Texture.hpp"
 #include "renderer/VertexArray.hpp"
 #include "renderer/renderer.hpp"
-#include "renderer/shader.hpp"
+#include "renderer/Shader.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>

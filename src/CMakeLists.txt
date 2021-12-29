@@ -20,6 +20,7 @@ set(
   renderer/loadobj.cpp
   renderer/Texture.cpp
   renderer/Camera.cpp
+  renderer/Shader.cpp
   )
 
 set(
@@ -41,6 +42,7 @@ set(
   renderer/renderer.hpp
   renderer/loadobj.hpp
   renderer/Texture.hpp
+  renderer/Shader.hpp
   )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
