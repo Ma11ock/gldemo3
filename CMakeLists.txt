@@ -25,7 +25,6 @@ if(NOT SDL2_IMAGE_FOUND)
   message(FATAL_ERROR "Could not find system SDL_image")
 endif()
 
-
 find_package(SDL2_ttf)
 
 if(NOT SDL2_TTF_FOUND)

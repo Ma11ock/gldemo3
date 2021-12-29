@@ -24,13 +24,18 @@ const chron::nanoseconds proj::GameLayer::LOGICAL_FRAME_TIME = 28570000ns;
 
 proj::GameLayer::GameLayer()
     : frame::Layer(LOGICAL_FRAME_TIME),mRightButtonIsPressed(false),
-      mMouseMoved(false),mLastMouseX(0.f),mLastMouseY(0.f),mXpos(0.f),mYpos(0.f)
+      mMouseMoved(false),mLastMouseX(0.f),mLastMouseY(0.f),mXpos(0.f),
+      mYpos(0.f)
 {
     shaderProgram = std::make_shared<Shader>("main.vert", "main.frag");
-    claire = std::make_shared<graph::Thing>("claire.obj", "claire.bmp", shaderProgram);
-    tyrant = std::make_shared<graph::Thing>("tyrant.obj", "tyrant.bmp", shaderProgram);
-    leon = std::make_shared<graph::Thing>("leon.obj", "leon.bmp", shaderProgram);
-    teapot = std::make_shared<graph::Thing>("teapot.obj", "earth.jpg", shaderProgram);
+    claire = std::make_shared<graph::Thing>("claire.obj", "claire.png",
+                                            shaderProgram);
+    tyrant = std::make_shared<graph::Thing>("tyrant.obj", "tyrant.png",
+                                            shaderProgram);
+    leon = std::make_shared<graph::Thing>("leon.obj", "leon.png",
+                                          shaderProgram);
+    teapot = std::make_shared<graph::Thing>("teapot.obj", "earth.png",
+                                            shaderProgram);
 
     teapot->translate(glm::vec3(20.f, 0.f, 10.f));
 
@@ -44,10 +49,6 @@ proj::GameLayer::GameLayer()
 
 void proj::GameLayer::update()
 {
-    claire->rotate(glm::sin(std::chrono::system_clock::now()
-                            .time_since_epoch()
-                            .count() / 1000000),
-                   glm::vec3(0.f, 1.f, 0.f));
     if(mMouseMoved)
     {
         static bool firstMouse = true;
@@ -64,26 +65,22 @@ void proj::GameLayer::update()
         mLastMouseX = mXpos;
         mLastMouseY = mYpos;
         if(mRightButtonIsPressed)
-            camera.ProcessMouseMovement(dx, dy);
+            camera.processMouseMovement(dx, dy);
     }
 }
 
 void proj::GameLayer::draw(double alpha)
 {
-    // TODO get rid of matrix stack.
     shaderProgram->use();
-    auto persp = glm::perspective(glm::radians(camera.Zoom),
-                                  1.f,
-                                  0.1f,
-                                  1000.f);
+    auto persp = camera.createPerspective(1.f);
 
     glm::vec3 lightColor(1.f, 1.f, 1.f);
 
-    shaderProgram->set("uViewMatrix", camera.GetViewMatrix());
+    shaderProgram->set("uViewMatrix", camera.getViewMatrix());
     shaderProgram->set("uProjectionMatrix", persp);
     shaderProgram->set("uTextureMatrix", glm::mat4(1.f));
     shaderProgram->set("uColorMatrix", glm::mat4(1.f));
-    shaderProgram->set("uViewPos", camera.Position);
+    shaderProgram->set("uViewPos", camera.getPosition());
     shaderProgram->set("uNumDirLights", 1u);
     shaderProgram->set("uNumPointLights", 0u);
     shaderProgram->set("uNumSpotLights", 0u);
@@ -95,10 +92,10 @@ void proj::GameLayer::draw(double alpha)
     shaderProgram->set("uMaterial.specular", 0);
     shaderProgram->set("uMaterial.shininess", 64.f);
 
-    claire->draw(camera.GetViewMatrix(), persp);
-    tyrant->draw(camera.GetViewMatrix(), persp);
-    leon->draw(camera.GetViewMatrix(), persp);
-    teapot->draw(camera.GetViewMatrix(), persp);
+    claire->draw(camera.getViewMatrix(), persp);
+    tyrant->draw(camera.getViewMatrix(), persp);
+    leon->draw(camera.getViewMatrix(), persp);
+    teapot->draw(camera.getViewMatrix(), persp);
 }
 
 

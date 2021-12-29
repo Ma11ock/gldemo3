@@ -19,6 +19,7 @@ set(
   renderer/renderer.cpp
   renderer/loadobj.cpp
   renderer/Texture.cpp
+  renderer/Camera.cpp
   )
 
 set(
@@ -70,9 +71,12 @@ target_link_libraries(glproject PUBLIC ${SDL2_TTF_LIBRARIES})
 target_include_directories(glproject PUBLIC ${SDL2_INCLUDE_DIR})
 target_include_directories(glproject PUBLIC ${SDL2_MIXER_INCLUDE_DIRS})
 target_include_directories(glproject PUBLIC ${SDL2_TTF_INCLUDE_DIRS})
-target_include_directories(glproject PUBLIC ${PROJECT_SOURCE_DIR}/external/)
-target_include_directories(glproject PUBLIC ${PROJECT_SOURCE_DIR}/external/glm)
-target_include_directories(glproject PUBLIC ${PROJECT_SOURCE_DIR}/external/fmt/include/)
+target_include_directories(glproject PUBLIC
+  ${PROJECT_SOURCE_DIR}/external/)
+target_include_directories(glproject PUBLIC
+  ${PROJECT_SOURCE_DIR}/external/glm)
+target_include_directories(glproject PUBLIC
+  ${PROJECT_SOURCE_DIR}/external/fmt/include/)
 
 
 if(${CMAKE_CXX_BYTE_ORDER} STREQUAL  "BIG_ENDIAN")
