@@ -41,8 +41,22 @@
 #include <charconv>
 #include <limits>
 #include <fstream>
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 #define STRINGIFY(s) #s
+
+template<>
+struct fmt::formatter<std::filesystem::path> :
+    fmt::formatter<std::string_view>
+{
+    template <typename FormatContext>
+    auto format(const std::filesystem::path &path, FormatContext& ctx)
+    {
+        return formatter<std::string_view>::format(path.generic_string(),
+                                                   ctx);
+    }
+};
 
 namespace proj
 {

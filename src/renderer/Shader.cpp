@@ -4,6 +4,9 @@
 #include <glm/glm.hpp>
 #include <cstdint>
 #include <filesystem>
+#include <fstream>
+#include <fmt/core.h>
+#include "../util.hpp"
 
 namespace fs = std::filesystem;
 
@@ -27,8 +30,8 @@ std::uint32_t Shader::compileShader(const fs::path &path)
     }
     catch (std::ifstream::failure& e)
     {
-        std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << '\n';
-        return 0;
+        throw std::runtime_error(fmt::format("Unable to read file {}: {}",
+                                             path, e.what()));
     }
 
     const char *shaderCString = shaderString.c_str();
