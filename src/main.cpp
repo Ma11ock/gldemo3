@@ -3,14 +3,17 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <filesystem>
 
 #include "graphics.hpp"
 #include "frame.hpp"
 #include "input.hpp"
 #include "gameLayer.hpp"
+#include "util.hpp"
 
 using namespace std::literals::string_literals;
 using namespace std::literals::string_view_literals;
+namespace fs = std::filesystem;
 
 namespace
 {
@@ -20,6 +23,7 @@ namespace
 int main(int argc, const char * const argv[])
 {
     int result = EXIT_SUCCESS;
+    std::cout << "Current working directory is " << fs::current_path() << '\n';
     try
     {
         args = std::vector<std::string>(argv + 1, argv + argc);

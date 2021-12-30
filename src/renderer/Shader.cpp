@@ -10,6 +10,7 @@
 
 namespace fs = std::filesystem;
 
+// Compile shader, return OpenGL ID of shader.
 std::uint32_t Shader::compileShader(const fs::path &path)
 {
     std::uint32_t shader = 0;
@@ -40,4 +41,14 @@ std::uint32_t Shader::compileShader(const fs::path &path)
     GLCall(glCompileShader(shader));
 
     return shader;
+}
+
+// Get the type of shader from its file path.
+GLenum Shader::getShaderType(const fs::path &path)
+{
+    std::string extension = path.extension().generic_string();
+    for(const auto &s : SHADER_TYPES)
+        if(extension == s.first)
+            return s.second;
+    return 0;
 }

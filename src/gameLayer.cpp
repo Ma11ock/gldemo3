@@ -27,14 +27,14 @@ proj::GameLayer::GameLayer()
       mMouseMoved(false),mLastMouseX(0.f),mLastMouseY(0.f),mXpos(0.f),
       mYpos(0.f)
 {
-    shaderProgram = std::make_shared<Shader>("main.vert", "main.frag");
-    claire = std::make_shared<graph::Thing>("claire.obj", "claire.png",
+    shaderProgram = std::make_shared<Shader>("shader/main.vert", "shader/main.frag");
+    claire = std::make_shared<graph::Thing>("res/claire.obj", "res/claire.bmp",
                                             shaderProgram);
-    tyrant = std::make_shared<graph::Thing>("tyrant.obj", "tyrant.png",
+    tyrant = std::make_shared<graph::Thing>("res/tyrant.obj", "res/tyrant.png",
                                             shaderProgram);
-    leon = std::make_shared<graph::Thing>("leon.obj", "leon.png",
+    leon = std::make_shared<graph::Thing>("res/leon.obj", "res/leon.png",
                                           shaderProgram);
-    teapot = std::make_shared<graph::Thing>("teapot.obj", "earth.png",
+    teapot = std::make_shared<graph::Thing>("res/teapot.obj", "res/earth.png",
                                             shaderProgram);
 
     teapot->translate(glm::vec3(20.f, 0.f, 10.f));
@@ -71,7 +71,7 @@ void proj::GameLayer::update()
 
 void proj::GameLayer::draw(double alpha)
 {
-    shaderProgram->use();
+    shaderProgram->bind();
     auto persp = camera.createPerspective(1.f);
 
     glm::vec3 lightColor(1.f, 1.f, 1.f);
@@ -119,8 +119,42 @@ void proj::GameLayer::handleEvent(std::shared_ptr<proj::Event> event)
         {
         case proj::MouseCode::Right:
             mRightButtonIsPressed = true;
+            event->setHandled(true);
             break;
         default:
+            break;
+        }
+    }
+    break;
+    case proj::EventType::MouseScrolled:
+    {
+        auto &mouseEvent = *dynamic_cast<proj::MouseWheel*>(event.get());
+        camera.processMouseScroll(static_cast<float>
+                                  (mouseEvent.getScrollY()) / 10.f);
+    }
+    break;
+    case proj::EventType::KeyPressed:
+    case proj::EventType::KeyHold:
+    {
+        auto &keyboardEvent = *dynamic_cast<proj::KeyPressedEvent*>(event.get());
+
+        event->setHandled(true);
+        switch(keyboardEvent.getKeyCode())
+        {
+        case proj::KeyCode::W:
+            camera.processKeyboard(Camera::Movement::Forward, 0.01f);
+            break;
+        case proj::KeyCode::A:
+            camera.processKeyboard(Camera::Movement::Left, 0.01f);
+            break;
+        case proj::KeyCode::S:
+            camera.processKeyboard(Camera::Movement::Backward, 0.01f);
+            break;
+        case proj::KeyCode::D:
+            camera.processKeyboard(Camera::Movement::Right, 0.01f);
+            break;
+        default:
+            event->setHandled(false);
             break;
         }
     }

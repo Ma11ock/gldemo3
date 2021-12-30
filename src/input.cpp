@@ -202,7 +202,7 @@ void input::pollInput()
         switch(event.type)
         {
         case SDL_TEXTINPUT:
-            ::textInput += event.text.text;
+            textInput += event.text.text;
             createTextEvent();
             break;
         case SDL_QUIT:
@@ -212,8 +212,8 @@ void input::pollInput()
         case SDL_KEYUP:
         {
             auto sym = event.key.keysym.sym;
-            auto tmpKeyInfo = ::createKeyModifier(event.key);
-            ::keys[sym] = tmpKeyInfo;
+            auto tmpKeyInfo = createKeyModifier(event.key);
+            keys[sym] = tmpKeyInfo;
             createKeyReleaseEvent(sdlKeyCodeToChar(sym));
         }
         break;
@@ -221,17 +221,17 @@ void input::pollInput()
         {
             auto sym = event.key.keysym.sym;
             auto tmpKeyInfo = ::createKeyModifier(event.key);
-            ::keys[sym] = tmpKeyInfo;
+            keys[sym] = tmpKeyInfo;
             if(std::get<proj::EventType>(tmpKeyInfo) == proj::EventType::KeyHold)
-                ::createKeyHoldEvent(sdlKeyCodeToChar(sym));
+                createKeyHoldEvent(sdlKeyCodeToChar(sym));
             else
-                ::createKeyDownEvent(sdlKeyCodeToChar(sym));
+                createKeyDownEvent(sdlKeyCodeToChar(sym));
         }
         break;
         case SDL_MOUSEMOTION:
         {
-            ::createMouseMotionEvent(static_cast<float>(event.button.x),
-                                     static_cast<float>(event.button.y));
+            createMouseMotionEvent(static_cast<float>(event.button.x),
+                                   static_cast<float>(event.button.y));
         }
         break;
         case SDL_MOUSEBUTTONDOWN:
@@ -252,7 +252,7 @@ void input::pollInput()
         break;
         case SDL_MOUSEWHEEL:
         {
-            ::createMouseWheelEvent(event.wheel.x, event.wheel.y);
+            createMouseWheelEvent(event.wheel.x, event.wheel.y);
         }
         default:
             break;

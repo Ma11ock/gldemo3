@@ -61,7 +61,7 @@ struct fmt::formatter<std::filesystem::path> :
 namespace proj
 {
     /// Alias for a vector of bytes.
-    using buffer = std::vector<std::byte>;
+    using buffer = std::vector<std::uint8_t>;
     /// Rectangle type, can have any numeric underlying type.
     template<typename Tnum,
              typename = typename std::enable_if<std::is_arithmetic<Tnum>::value,
@@ -279,8 +279,10 @@ namespace proj
         using namespace std::string_literals;
         auto num = std::stoul(std::string(str));
         if(num > std::numeric_limits<std::uint32_t>::max())
-            throw std::out_of_range("The number "s + std::to_string(num) +
-                                    " is out of range.\n"s);
+            throw std::out_of_range(
+                fmt::format("The number {} is out of range.",
+                            str)
+                );
         return toColor(static_cast<std::uint32_t>(num));
     }
     /// Cast namespace, for printf functions.
@@ -502,9 +504,10 @@ namespace proj
         static_assert(std::is_integral_v<Tint>,
                       "Ordinal template type is not an integral.");
 
-        const static std::array suffixes = {"th", "st", "nd", "rd" };
+        const static std::array suffixes = { "th", "st", "nd", "rd" };
         auto lastDigit = i % 10;
-        return std::to_string(i) + (lastDigit > 3 ? suffixes[0] : suffixes[lastDigit]);
+        return std::to_string(i) + (lastDigit > 3 ? suffixes[0] :
+                                    suffixes[lastDigit]);
     }
 
     /**
@@ -676,6 +679,8 @@ namespace proj
             throw std::invalid_argument("Denominator is 0");
         return numerator / denominator + (numerator % denominator > 0);
     }
+
+    
 }
 
 /* The following code to create type-safe bitmasks is from

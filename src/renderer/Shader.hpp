@@ -3,6 +3,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <string>
 #include <fstream>
@@ -15,7 +16,7 @@
 
 #include "Bindable.hpp"
 
-class Shader
+class Shader : public Bindable
 {
 public:
     static inline constexpr std::array SHADER_TYPES = {
@@ -53,26 +54,26 @@ public:
         std::cout << "Done creating shader program.\n";
     }
 
+    // Compile shader, return OpenGL ID of shader.
     std::uint32_t compileShader(const std::filesystem::path &path);
-
-    inline GLenum getShaderType(const std::filesystem::path &path)
-    {
-        std::string extension = path.extension().generic_string();
-        for(const auto &s : SHADER_TYPES)
-            if(extension == s.first)
-                return s.second;
-        return 0;
-    }
+    // Get the type of shader from its file path.
+    GLenum getShaderType(const std::filesystem::path &path);
 
     // activate the shader
-    inline void use() 
+    virtual void bind() 
     { 
         glUseProgram(mId); 
+    }
+    // Deactivate the shader.
+    virtual void unbind()
+    {
+        glUseProgram(0); 
     }
     // utility uniform functions
     inline void set(const std::string &name, bool value) const
     {         
-        glUniform1i(glGetUniformLocation(mId, name.c_str()), (int)value); 
+        glUniform1i(glGetUniformLocation(mId, name.c_str()),
+                    static_cast<std::int32_t>(value)); 
     }
     inline void set(const std::string &name, std::int32_t value) const
     { 
@@ -89,7 +90,7 @@ public:
     inline void set(const std::string &name, const glm::vec2 &value) const
     { 
         glUniform2fv(glGetUniformLocation(mId, name.c_str()), 1,
-                     &value[0]); 
+                     glm::value_ptr(value)); 
     }
     inline void set(const std::string &name, float x, float y) const
     { 
@@ -99,7 +100,7 @@ public:
                     const glm::vec3 &value) const
     { 
         glUniform3fv(glGetUniformLocation(mId, name.c_str()), 1,
-                     &value[0]); 
+                     glm::value_ptr(value)); 
     }
     inline void set(const std::string &name, float x, float y,
                     float z) const
@@ -109,7 +110,7 @@ public:
     inline void set(const std::string &name, const glm::vec4 &value) const
     { 
         glUniform4fv(glGetUniformLocation(mId, name.c_str()), 1,
-                     &value[0]); 
+                     glm::value_ptr(value)); 
     }
     inline void set(const std::string &name, float x, float y, float z,
                     float w) 
@@ -119,17 +120,17 @@ public:
     inline void set(const std::string &name, const glm::mat2 &mat) const
     {
         glUniformMatrix2fv(glGetUniformLocation(mId, name.c_str()), 1,
-                           GL_FALSE, &mat[0][0]);
+                           GL_FALSE, glm::value_ptr(mat));
     }
     inline void set(const std::string &name, const glm::mat3 &mat) const
     {
         glUniformMatrix3fv(glGetUniformLocation(mId, name.c_str()), 1,
-                           GL_FALSE, &mat[0][0]);
+                           GL_FALSE, glm::value_ptr(mat));
     }
     inline void set(const std::string &name, const glm::mat4 &mat) const
     {
         glUniformMatrix4fv(glGetUniformLocation(mId, name.c_str()), 1,
-                           GL_FALSE, &mat[0][0]);
+                           GL_FALSE, glm::value_ptr(mat));
     }
 
 private:

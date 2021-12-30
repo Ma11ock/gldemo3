@@ -90,5 +90,5 @@ endif()
 add_custom_target(run
     COMMAND glproject
     DEPENDS glproject
-    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )

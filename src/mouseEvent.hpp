@@ -20,7 +20,8 @@ namespace proj
     public:
         virtual ~MouseMove() = default;
         MouseMove(float x, float y)
-            : Event(proj::EventCategory::MouseInput, proj::EventType::MouseMoved),
+            : Event(proj::EventCategory::MouseInput,
+                    proj::EventType::MouseMoved),
               _x(x),_y(y)
         {
         }
