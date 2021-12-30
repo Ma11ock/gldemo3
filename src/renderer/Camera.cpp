@@ -1,5 +1,9 @@
 #include "Camera.hpp"
 
+#include <ratio>
+
+namespace chron = std::chrono;
+
 Camera::Camera(const glm::vec3 &position, const glm::vec3 &up, float yaw,
                float pitch, float speed, float sensitivity, float zoom)
     : mPosition(position),mFront(glm::vec3(0.f, 0.f, -1.f)),mUp(0.f),
@@ -57,9 +61,11 @@ void Camera::processMouseMovement(float xoffset, float yoffset,
     updateCameraVectors();
 }
 
-void Camera::processKeyboard(Camera::Movement direction, float deltaTime)
+void Camera::processKeyboard(Camera::Movement direction,
+                             chron::nanoseconds deltaTime)
 {
-    float velocity = mMovementSpeed * deltaTime;
+    float velocity = mMovementSpeed *
+        chron::duration_cast<chron::duration<float>>(deltaTime).count();
     switch(direction)
     {
     case Camera::Movement::Forward:

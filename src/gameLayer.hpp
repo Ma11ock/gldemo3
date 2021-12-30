@@ -9,7 +9,6 @@
 #include "frame.hpp"
 #include "graphics.hpp"
 
-
 #include <cstdint>
 #include <chrono>
 

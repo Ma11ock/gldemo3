@@ -34,7 +34,6 @@ int main(int argc, const char * const argv[])
         bool playing = true;
         while(playing)
         {
-            input::pollInput();
             graph::clearWindow();
             frame::start();
 

@@ -101,6 +101,8 @@ void proj::GameLayer::draw(double alpha)
 
 void proj::GameLayer::handleEvent(std::shared_ptr<proj::Event> event)
 {
+    // Find out which event type the event is, downcast to that type,
+    // and then process it.
     switch(event->getEventType())
     {
     case proj::EventType::MouseMoved:
@@ -142,16 +144,16 @@ void proj::GameLayer::handleEvent(std::shared_ptr<proj::Event> event)
         switch(keyboardEvent.getKeyCode())
         {
         case proj::KeyCode::W:
-            camera.processKeyboard(Camera::Movement::Forward, 0.01f);
+            camera.processKeyboard(Camera::Movement::Forward, mDeltaTime);
             break;
         case proj::KeyCode::A:
-            camera.processKeyboard(Camera::Movement::Left, 0.01f);
+            camera.processKeyboard(Camera::Movement::Left, mDeltaTime);
             break;
         case proj::KeyCode::S:
-            camera.processKeyboard(Camera::Movement::Backward, 0.01f);
+            camera.processKeyboard(Camera::Movement::Backward, mDeltaTime);
             break;
         case proj::KeyCode::D:
-            camera.processKeyboard(Camera::Movement::Right, 0.01f);
+            camera.processKeyboard(Camera::Movement::Right, mDeltaTime);
             break;
         default:
             event->setHandled(false);

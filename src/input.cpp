@@ -14,6 +14,7 @@
 
 namespace
 {
+    // Mouse button states.
     std::array<bool, 6> mouseButtonIsDown{false}; 
     /* True if the user is trying to quit. False if not. */
     bool isQuit = false;
@@ -34,7 +35,8 @@ namespace
         switch(kbe.state)
         {
         case SDL_PRESSED:
-            ks = kbe.repeat ? proj::EventType::KeyHold : proj::EventType::KeyPressed;
+            ks = kbe.repeat ? proj::EventType::KeyHold
+                : proj::EventType::KeyPressed;
             break;
         case SDL_RELEASED:
             ks = proj::EventType::KeyReleased;
@@ -52,7 +54,7 @@ namespace
                         const std::vector<proj::KeyModifiers> &mods)
     {
         constexpr proj::EventType nothing = proj::EventType::None;
-        auto [state, kmod] = ::keys[code];
+        auto [state, kmod] = keys[code];
         if(state == nothing)
             return nothing;
         for(const auto &mod : mods)
@@ -191,7 +193,7 @@ void input::pollInput()
     /* SDL Event struct. */
     static SDL_Event event;
     /* Reset ::keys and textInput. */
-    for(auto &[key, value] : ::keys)
+    for(auto &[key, value] : keys)
         value = std::make_tuple(proj::EventType::None, KMOD_NONE);
 
     textInput.clear();
@@ -208,24 +210,35 @@ void input::pollInput()
         case SDL_QUIT:
             isQuit = true;
             break;
-
+        case SDL_KEYDOWN:
+        {
+            // TODO do keys by scancode.
+            int numKeys = 0;
+            const std::uint8_t *ptr = SDL_GetKeyboardState(&numKeys);
+            for(int i = 0; i < numKeys; i++)
+            {
+                if(ptr[i] != 0)
+                {
+                    auto sym = SDL_GetKeyFromScancode(
+                        static_cast<SDL_Scancode>(i)
+                        );
+                    auto tmpKeyInfo = createKeyModifier(event.key);
+                    keys[sym] = tmpKeyInfo;
+                    if(std::get<proj::EventType>(tmpKeyInfo) ==
+                       proj::EventType::KeyHold)
+                        createKeyHoldEvent(sdlKeyCodeToChar(sym));
+                    else
+                        createKeyDownEvent(sdlKeyCodeToChar(sym));
+                }
+            }
+        }
+        break;
         case SDL_KEYUP:
         {
             auto sym = event.key.keysym.sym;
             auto tmpKeyInfo = createKeyModifier(event.key);
             keys[sym] = tmpKeyInfo;
             createKeyReleaseEvent(sdlKeyCodeToChar(sym));
-        }
-        break;
-        case SDL_KEYDOWN:
-        {
-            auto sym = event.key.keysym.sym;
-            auto tmpKeyInfo = ::createKeyModifier(event.key);
-            keys[sym] = tmpKeyInfo;
-            if(std::get<proj::EventType>(tmpKeyInfo) == proj::EventType::KeyHold)
-                createKeyHoldEvent(sdlKeyCodeToChar(sym));
-            else
-                createKeyDownEvent(sdlKeyCodeToChar(sym));
         }
         break;
         case SDL_MOUSEMOTION:
@@ -254,6 +267,7 @@ void input::pollInput()
         {
             createMouseWheelEvent(event.wheel.x, event.wheel.y);
         }
+        break;
         default:
             break;
         }
@@ -287,7 +301,7 @@ proj::EventType input::getKeyState(char code, const std::vector<proj::KeyModifie
 proj::EventType input::getKeyState(proj::KeyCode code,
                                    const std::vector<proj::KeyModifiers> &mods)
 {
-    return internalGetKeyState(::charKeyCodeToSDL(code), mods);
+    return internalGetKeyState(charKeyCodeToSDL(code), mods);
 }
 /* Get a string of the last alphanumeric keypresses.
    Returns an empty string if no keypresses occurred. */

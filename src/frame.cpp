@@ -16,10 +16,9 @@
 #include <memory>
 #include <vector>
 #include <tuple>
-#include <queue>
 #include "frame.hpp"
 #include "event.hpp"
-
+#include "input.hpp"
 
 using namespace std::literals;
 namespace chron = std::chrono;
@@ -51,7 +50,7 @@ namespace
     };
     std::vector<layerData> layers;
 
-    std::queue<std::shared_ptr<proj::Event>> eventQ;
+    std::vector<std::shared_ptr<proj::Event>> eventQ;
 }
 
 /* Init the framerate system. */
@@ -79,18 +78,16 @@ void frame::start()
     for(auto &[layer, _, __] : layers)
         layer->startFrame();
 
+    input::pollInput();
+
     /* Handle events. */
-    while(!eventQ.empty())
-    {
-        auto &curEvent = eventQ.front();
-
+    for(auto event : eventQ)
         for(auto &[layer, _, __] : layers)
-            if(!curEvent->isHandled())
-                layer->handleEvent(curEvent);
+            if(!event->isHandled())
+                layer->handleEvent(event);
+    eventQ.clear();
 
-        eventQ.pop();
-    }
-
+    // Delta time.
     frame::timePoint newTime = frame::sysClock::now();
     auto frameTime = newTime - currentTime;
     if(frameTime > MAX_FRAME_TIME)
@@ -163,30 +160,30 @@ frame::Layer::Layer(frame::duration deltaTime, frame::duration totalTime)
 
 std::uint32_t frame::getGlobalFPS()
 {
-    return ::fps;
+    return fps;
 }
 
 std::uint32_t frame::getGlobalFrame()
 {
-    return ::frames;
+    return frames;
 }
 
 std::uint64_t frame::getGlobalTPS()
 {
-    return ::tps;
+    return tps;
 }
 
 std::uint64_t frame::getGlobalTick()
 {
-    return ::ticks;
+    return ticks;
 }
 
 std::uint64_t frame::getGlobalTickCount()
 {
-    return ::totalTicks;
+    return totalTicks;
 }
 
 void frame::addToEventQueue(std::shared_ptr<proj::Event> event)
 {
-    ::eventQ.push(event);
+    eventQ.push_back(event);
 }

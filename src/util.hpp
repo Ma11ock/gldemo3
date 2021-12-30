@@ -18,7 +18,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Util.  If not, see <http://www.gnu.org/licenses/>.
-
 */
 
 #ifndef UTIL_UTIL_HPP

@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
+#include <chrono>
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera
@@ -26,14 +27,15 @@ public:
            const glm::vec3 &up = glm::vec3(0.f, 1.f, 0.f),
            float yaw = -90.f,
            float pitch = 0.f,
-           float speed = 10.5f,
+           float speed = 15.5f,
            float sensitivity = 0.1f,
            float zoom = 45.f);
 
     // processes input received from any keyboard-like input system.
     // Accepts input parameter in the form of camera defined ENUM
     // (to abstract it from windowing systems)
-    void processKeyboard(Movement direction, float deltaTime);
+    void processKeyboard(Movement direction,
+                         std::chrono::nanoseconds deltaTimem);
 
     // processes input received from a mouse input system. Expects
     // the offset value in both the x and y direction.
