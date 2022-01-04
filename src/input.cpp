@@ -11,6 +11,7 @@
 #include "frame.hpp"
 #include "keyboardEvent.hpp"
 #include "mouseEvent.hpp"
+#include "util.hpp"
 
 namespace
 {
@@ -19,9 +20,9 @@ namespace
     /* True if the user is trying to quit. False if not. */
     bool isQuit = false;
     /* The x position of the mouse. */
-    float mouseX = 0;
+    float mouseX = 0.f;
     /* The y position of the mouse. */
-    float mouseY = 0;
+    float mouseY = 0.f;
     /* Keystates. */
     std::unordered_map<SDL_Keycode,
                        std::tuple<proj::EventType, SDL_Keymod>> keys;
@@ -190,8 +191,6 @@ static proj::KeyCode sdlKeyCodeToChar(SDL_Keycode kc);
 /* Poll the operating system for input. */
 void input::pollInput()
 {
-    /* SDL Event struct. */
-    static SDL_Event event;
     /* Reset ::keys and textInput. */
     for(auto &[key, value] : keys)
         value = std::make_tuple(proj::EventType::None, KMOD_NONE);
@@ -199,7 +198,7 @@ void input::pollInput()
     textInput.clear();
 
     SDL_StartTextInput();
-    while(SDL_PollEvent(&event) != 0)
+    for(SDL_Event event; SDL_PollEvent(&event); )
     {
         switch(event.type)
         {

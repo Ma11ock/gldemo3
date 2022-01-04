@@ -680,6 +680,13 @@ namespace proj
     }
 
     
+    template<typename T>
+    inline void vectorAdd(std::vector<T> &addend,
+                          const std::vector<T> &addendum)
+    {
+        addend.insert(addend.end(), addendum.begin(),
+                      addendum.end());
+    }
 }
 
 /* The following code to create type-safe bitmasks is from

@@ -9,6 +9,7 @@
 #include "event.hpp"
 #include "keyboardEvent.hpp"
 #include "util.hpp"
+#include "mouseEvent.hpp"
 
 namespace input
 {
