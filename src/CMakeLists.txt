@@ -16,6 +16,7 @@ set(
   gameLayer.cpp
   input.cpp
   graphics.cpp
+  InputMap.cpp
   renderer/renderer.cpp
   renderer/loadobj.cpp
   renderer/Texture.cpp
@@ -33,6 +34,7 @@ set(
   mouseEvent.hpp
   input.hpp
   graphics.hpp
+  InputMap.hpp
   renderer/glutil.hpp
   renderer/Bindable.hpp
   renderer/VertexArray.hpp

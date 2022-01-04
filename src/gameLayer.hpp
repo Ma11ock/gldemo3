@@ -8,6 +8,7 @@
 
 #include "frame.hpp"
 #include "graphics.hpp"
+#include "InputMap.hpp"
 
 #include <cstdint>
 #include <chrono>

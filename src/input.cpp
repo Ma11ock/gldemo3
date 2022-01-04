@@ -211,7 +211,6 @@ void input::pollInput()
             break;
         case SDL_KEYDOWN:
         {
-            // TODO do keys by scancode.
             int numKeys = 0;
             const std::uint8_t *ptr = SDL_GetKeyboardState(&numKeys);
             for(int i = 0; i < numKeys; i++)
