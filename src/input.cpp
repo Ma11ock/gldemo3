@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 
-#include <tuple>
+#include <utility>
 #include <unordered_map>
 #include <type_traits>
 #include <iostream>
@@ -25,11 +25,11 @@ namespace
     float mouseY = 0.f;
     /* Keystates. */
     std::unordered_map<SDL_Keycode,
-                       std::tuple<proj::EventType, SDL_Keymod>> keys;
+                       std::pair<proj::EventType, SDL_Keymod>> keys;
     /* String that gets SDL's text input. */
     std::string textInput;
     /* Converts SDL keyboard input data to a KeyInput. */
-    inline std::tuple<proj::EventType, SDL_Keymod>
+    inline std::pair<proj::EventType, SDL_Keymod>
     createKeyModifier(SDL_KeyboardEvent &kbe)
     {
         proj::EventType ks = proj::EventType::None;
@@ -46,8 +46,8 @@ namespace
             break;
         }
 
-        return std::make_tuple(ks,
-                               static_cast<SDL_Keymod>(kbe.keysym.mod));
+        return std::make_pair(ks,
+                              static_cast<SDL_Keymod>(kbe.keysym.mod));
     }
     /* Check to see if a key combination is pressed. */
     inline proj::EventType
@@ -191,14 +191,11 @@ static proj::KeyCode sdlKeyCodeToChar(SDL_Keycode kc);
 /* Poll the operating system for input. */
 void input::pollInput()
 {
-    /* Reset ::keys and textInput. */
-    for(auto &[key, value] : keys)
-        value = std::make_tuple(proj::EventType::None, KMOD_NONE);
-
+    // Reset text input.
     textInput.clear();
 
     SDL_StartTextInput();
-    for(SDL_Event event; SDL_PollEvent(&event); )
+    for(SDL_Event event = {}; SDL_PollEvent(&event); )
     {
         switch(event.type)
         {
@@ -211,24 +208,10 @@ void input::pollInput()
             break;
         case SDL_KEYDOWN:
         {
-            int numKeys = 0;
-            const std::uint8_t *ptr = SDL_GetKeyboardState(&numKeys);
-            for(int i = 0; i < numKeys; i++)
-            {
-                if(ptr[i] != 0)
-                {
-                    auto sym = SDL_GetKeyFromScancode(
-                        static_cast<SDL_Scancode>(i)
-                        );
-                    auto tmpKeyInfo = createKeyModifier(event.key);
-                    keys[sym] = tmpKeyInfo;
-                    if(std::get<proj::EventType>(tmpKeyInfo) ==
-                       proj::EventType::KeyHold)
-                        createKeyHoldEvent(sdlKeyCodeToChar(sym));
-                    else
-                        createKeyDownEvent(sdlKeyCodeToChar(sym));
-                }
-            }
+            auto sym = event.key.keysym.sym;
+            auto tmpKeyInfo = createKeyModifier(event.key);
+            keys[sym] = tmpKeyInfo;
+            createKeyDownEvent(sdlKeyCodeToChar(sym));
         }
         break;
         case SDL_KEYUP:
@@ -274,6 +257,13 @@ void input::pollInput()
         if(mouseButtonIsDown[i])
             createMouseButtonEvent(proj::EventType::MousePressed,
                                    static_cast<proj::MouseCode>(i)); 
+
+    for(auto &[key, value] : keys)
+        if(static_cast<bool>(value.first & proj::EventType::KeyPressed))
+            createKeyHoldEvent(sdlKeyCodeToChar(key));
+        else
+            value = std::make_pair(proj::EventType::None, KMOD_NONE);
+
     SDL_StopTextInput();
 }
 

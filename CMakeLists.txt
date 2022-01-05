@@ -1,7 +1,15 @@
 cmake_minimum_required(VERSION 3.20)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/sdl2")
 
+# Calls on windows should look something like this:
+# cmake .. -DCMAKE_BUILD_TYPE=debug
+# "-DSDL2_MIXER_INCLUDE_DIR=C:\Program Files\SDL2_mixer-2.0.4\x86_64-w64-mingw32\include"
+# "-DSDL2_MIXER_LIBRARY=C:\Program Files\SDL2_mixer-2.0.4\x86_64-w64-mingw32\lib\libSDL2_mixer.a"
+# "-DSDL2_INCLUDE_DIR=C:\Program Files\SDL2-2.0.18\x86_64-w64-mingw32\include"
+# "-DSDL2_LIBRARY=C:\Program Files\SDL2-2.0.18\x86_64-w64-mingw32\lib\libSDL2.a"
+# "-DSDL2MAIN_LIBRARY=C:\Program Files\SDL2-2.0.18\x86_64-w64-mingw32\lib\libSDL2main.a"
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE release)
   message("Setting build type to release.")
@@ -13,35 +21,9 @@ endif()
 
 project(glproject VERSION 0.0.1)
 
-find_package(SDL2)
-
-if(NOT SDL2_FOUND OR NOT SDL2MAIN_LIBRARY)
-  message(FATAL_ERROR "Could not find system SDL library")
-endif()
-
-find_package(SDL2_image)
-
-if(NOT SDL2_IMAGE_FOUND)
-  message(FATAL_ERROR "Could not find system SDL_image")
-endif()
-
-find_package(SDL2_ttf)
-
-if(NOT SDL2_TTF_FOUND)
-  message(FATAL_ERROR "Could not find system SDL_ttf")
-endif()
-
-find_package(SDL2_mixer)
-
-if(NOT SDL2_MIXER_FOUND)
-  message(FATAL_ERROR "Could not find system SDL_ttf")
-endif()
-
+find_package(SDL2 REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 find_package(OpenGL REQUIRED)
-
-if(NOT OPENGL_FOUND)
-  message(FATAL_ERROR "Could not find OpenGL")
-endif()
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/glad)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/glm)

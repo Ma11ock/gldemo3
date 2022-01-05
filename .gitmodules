@@ -7,3 +7,6 @@
 [submodule "external/fmt"]
 	path = external/fmt
 	url = git@github.com:fmtlib/fmt
+[submodule "cmake/sdl2"]
+	path = cmake/sdl2
+	url = git@github.com:aminosbh/sdl2-cmake-modules

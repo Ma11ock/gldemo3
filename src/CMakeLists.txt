@@ -17,11 +17,11 @@ set(
   input.cpp
   graphics.cpp
   InputMap.cpp
+  renderer/Shader.cpp
   renderer/renderer.cpp
   renderer/loadobj.cpp
   renderer/Texture.cpp
   renderer/Camera.cpp
-  renderer/Shader.cpp
   )
 
 set(
@@ -35,6 +35,7 @@ set(
   input.hpp
   graphics.hpp
   InputMap.hpp
+  renderer/Shader.hpp
   renderer/glutil.hpp
   renderer/Bindable.hpp
   renderer/VertexArray.hpp
@@ -44,7 +45,6 @@ set(
   renderer/renderer.hpp
   renderer/loadobj.hpp
   renderer/Texture.hpp
-  renderer/Shader.hpp
   )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -68,13 +68,11 @@ target_link_libraries(glproject PUBLIC ${CMAKE_DL_LIBS})
 target_link_libraries(glproject PUBLIC glm::glm)
 target_link_libraries(glproject PUBLIC fmt::fmt)
 # Link SDL2 libs.
-target_link_libraries(glproject PUBLIC ${SDL2_LIBRARY})
-target_link_libraries(glproject PUBLIC ${SDL2_MIXER_LIBRARIES})
-target_link_libraries(glproject PUBLIC ${SDL2_TTF_LIBRARIES})
+target_link_libraries(glproject PUBLIC SDL2::Main)
+target_link_libraries(glproject PUBLIC SDL2::Mixer)
 
 target_include_directories(glproject PUBLIC ${SDL2_INCLUDE_DIR})
 target_include_directories(glproject PUBLIC ${SDL2_MIXER_INCLUDE_DIRS})
-target_include_directories(glproject PUBLIC ${SDL2_TTF_INCLUDE_DIRS})
 target_include_directories(glproject PUBLIC
   ${PROJECT_SOURCE_DIR}/external/)
 target_include_directories(glproject PUBLIC
