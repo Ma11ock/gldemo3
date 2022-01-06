@@ -19,6 +19,7 @@ extern "C" {
 #include "input.hpp"
 #include "gameLayer.hpp"
 #include "util.hpp"
+#include "settings.hpp"
 
 using namespace std::literals::string_literals;
 using namespace std::literals::string_view_literals;
@@ -55,6 +56,7 @@ int main(int argc, const char * const argv[])
 #else 
         args = std::vector<std::string>(argv + 1, argv + argc);
 #endif // _WIN32
+        proj::init(args);
         graph::init("project", 1200, 900);
         frame::init();
         frame::Layer::addLayer(std::make_shared<proj::GameLayer>());

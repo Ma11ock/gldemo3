@@ -17,6 +17,7 @@ set(
   input.cpp
   graphics.cpp
   InputMap.cpp
+  settings.cpp
   renderer/Shader.cpp
   renderer/renderer.cpp
   renderer/loadobj.cpp
@@ -35,6 +36,7 @@ set(
   input.hpp
   graphics.hpp
   InputMap.hpp
+  settings.hpp
   renderer/Shader.hpp
   renderer/glutil.hpp
   renderer/Bindable.hpp
