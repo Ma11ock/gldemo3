@@ -22,6 +22,9 @@ if(WIN32)
   set(EXTRA_VARS WIN32)
 endif()
 
+# Necessary to force fmtlib to build statically.
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+
 find_package(OpenGL REQUIRED)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/glad)
