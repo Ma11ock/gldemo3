@@ -23,6 +23,11 @@
 #ifndef UTIL_UTIL_HPP
 #define UTIL_UTIL_HPP
 
+#ifdef _WIN32
+
+#include <windows.h>
+
+#endif // _WIN32
 
 #include <cstdio>
 #include <string>

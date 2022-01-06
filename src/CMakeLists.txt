@@ -51,6 +51,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_executable(
   ${GLPROJECT_BINARY_FINAL}
+  ${EXTRA_VARS}
   main.cpp
   ${GLPROJECT_SOURCES}
   ${GLPROJECT_HEADERS}
@@ -67,11 +68,16 @@ target_link_libraries(glproject PUBLIC OpenGL::GL)
 target_link_libraries(glproject PUBLIC ${CMAKE_DL_LIBS})
 target_link_libraries(glproject PUBLIC glm::glm)
 target_link_libraries(glproject PUBLIC fmt::fmt)
-# Link SDL2 libs.
-target_link_libraries(glproject PUBLIC SDL2::Main)
-target_link_libraries(glproject PUBLIC SDL2::Mixer)
 
-target_include_directories(glproject PUBLIC ${SDL2_INCLUDE_DIR})
+# Link SDL2 libs.
+target_link_libraries(glproject PUBLIC SDL2::SDL2main)
+target_link_libraries(glproject PUBLIC SDL2::SDL2-static)
+target_link_libraries(glproject PUBLIC SDL2::mixer)
+
+target_include_directories(glproject PUBLIC
+  ${PROJECT_SOURCE_DIR}/external/SDL/include)
+target_include_directories(glproject PUBLIC
+  ${PROJECT_SOURCE_DIR}/external/SDL_mixer/include)
 target_include_directories(glproject PUBLIC ${SDL2_MIXER_INCLUDE_DIRS})
 target_include_directories(glproject PUBLIC
   ${PROJECT_SOURCE_DIR}/external/)

@@ -24,6 +24,7 @@ extern "C" {
 #include <windows.h>
 #include <malloc.h>
 #include <tchar.h>
+#include <psapi.h>
 #endif /* __FreeBSD__ */
 }
 

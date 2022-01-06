@@ -1,9 +1,9 @@
 #include "Texture.hpp"
 #define STB_IMAGE_IMPLEMENTATION 1
 extern "C" {
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <glad/glad.h>
-#include <SDL2/SDL_opengl.h>
+#include <SDL_opengl.h>
 #include <stb/stb_image.h>
 }
 
@@ -23,7 +23,8 @@ void Texture::init()
 Texture::Texture(const fs::path &path, int numChannels)
     : Texture()
 {
-    std::uint8_t *ptr = stbi_load(path.c_str(), &mWidth, &mHeight,
+    const auto &str = path.generic_string();
+    std::uint8_t *ptr = stbi_load(str.c_str(), &mWidth, &mHeight,
                                   &mNumChannels, numChannels);
     
     if(!ptr)

@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/sdl2")
-
 # Calls on windows should look something like this:
 # cmake .. -DCMAKE_BUILD_TYPE=debug
 # "-DSDL2_MIXER_INCLUDE_DIR=C:\Program Files\SDL2_mixer-2.0.4\x86_64-w64-mingw32\include"
@@ -21,13 +18,17 @@ endif()
 
 project(glproject VERSION 0.0.1)
 
-find_package(SDL2 REQUIRED)
-find_package(SDL2_mixer REQUIRED)
+if(WIN32)
+  set(EXTRA_VARS WIN32)
+endif()
+
 find_package(OpenGL REQUIRED)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/glad)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/glm)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/fmt)
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/SDL)
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/SDL_mixer)
 
 add_subdirectory(src)
 

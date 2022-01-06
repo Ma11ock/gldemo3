@@ -8,6 +8,9 @@
 #include <vector>
 #include <chrono>
 
+// Does not compile on Windows without these.
+#undef near
+#undef far
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera
 {
